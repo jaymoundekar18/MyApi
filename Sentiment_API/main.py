@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from textblob import TextBlob
 import uvicorn
 import re
-from mangum import Mangum
+# from mangum import Mangum
 
 app = FastAPI(title="Sentiment Analysis API")
 
@@ -63,7 +63,7 @@ def analyze_text(text: str):
         "lexical_diversity": lexical_diversity
     }
 
-# if __name__ == "__main__":
-#     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
 
-handler = Mangum(app)
+# handler = Mangum(app)
