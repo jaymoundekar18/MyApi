@@ -1,0 +1,6 @@
+fastapi
+pydantic
+textblob
+uvicorn
+regex
+mangum
