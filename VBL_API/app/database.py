@@ -15,8 +15,8 @@ client = MongoClient(MONGO_URI, server_api=ServerApi('1'), tls=True, tlsCAFile=c
 db = client['test']
 vbl_collection = db['vbl_data']
 
-# try:
-#     client.admin.command('ping')
-#     print("Pinged your deployment. You successfully connected to MongoDB!")
-# except Exception as e:
-#     print(e)
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(e)
