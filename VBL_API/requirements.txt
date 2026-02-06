@@ -5,3 +5,4 @@ pymongo
 pydantic
 python-dotenv
 argon2-cffi
+email-validator
