@@ -1,13 +1,18 @@
 from fastapi import FastAPI, HTTPException
 from app.schemas import EmployeeCreate, EmployeeResponse
+from app.schemas import UserResponse, ProductResponse, OrderResponse 
 from app import curd
 
 app = FastAPI(title="Employees API")
 
 @app.get("/", tags=["Root"])
 def read_root():
-    return {"message": "Welcome to the Employees API!",
-            "guide": "You can create, read, update, and delete employee records using the endpoints provided."}
+    return {"message": "Welcome to the my API!",
+            "guide": "You can get E-commerce data using endpoints /users, /products, and /orders. Or can perform CRUD operations on employee records using /employee endpoint."}
+
+# -----------------------
+# Employee CRUD endpoints 
+# -----------------------
 
 @app.post("/employees", response_model=EmployeeResponse)
 def create_employee(employee: EmployeeCreate):
@@ -32,3 +37,20 @@ def update_employee(id: str, employee: EmployeeCreate):
 def remove_employee(id: str):
     curd.delete_employee(id)
     return {"message": "Employee deleted successfully"}
+
+
+# ----------------------------------------------------
+# E-commerce endpoints for users, products, and orders
+# ----------------------------------------------------
+
+@app.get("/users", response_model=list[UserResponse])
+def list_users():
+    return curd.get_all_users()
+
+@app.get("/products", response_model=list[ProductResponse])
+def list_products():
+    return curd.get_all_products()
+
+@app.get("/orders", response_model=list[OrderResponse])
+def list_orders():
+    return curd.get_all_orders()
