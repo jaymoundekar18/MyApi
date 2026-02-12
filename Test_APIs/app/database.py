@@ -14,8 +14,13 @@ client = MongoClient(MONGO_URI, server_api=ServerApi('1'), tls=True, tlsCAFile=c
 db = client['test']
 employee_collection = db['employees']
 
-for emp in employee_collection.find():
-    print("the emp is : ",emp)
+ecomm_db = client['ecommerce_db']
+users_collection = ecomm_db['users']
+products_collection = ecomm_db['products']
+orders_collection = ecomm_db['orders']
+
+# for emp in employee_collection.find():
+#     print("the emp is : ",emp)
 
 # Send a ping to confirm a successful connection
 try:
