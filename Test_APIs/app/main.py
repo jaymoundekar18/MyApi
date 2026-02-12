@@ -8,7 +8,7 @@ app = FastAPI(title="Employees API")
 @app.get("/", tags=["Root"])
 def read_root():
     return {"message": "Welcome to the my API!",
-            "guide": "You can get E-commerce data using endpoints /users, /products, and /orders. Or can perform CRUD operations on employee records using /employee endpoint."}
+            "guide": "You can get E-commerce data using endpoints /users , /products , and /orders . Or can perform CRUD operations on employee records using /employees endpoint."}
 
 # -----------------------
 # Employee CRUD endpoints 
