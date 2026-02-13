@@ -34,14 +34,14 @@ def create_user(user: VblUserCreate):
 def list_users():
     return operations.get_all_users()
 
-@app.get("/users/{id}", response_model=VblUserResponse)
+@app.get("/users/id{id}", response_model=VblUserResponse)
 def get_user(id: str):
     user = operations.get_user_byID(id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@app.get("/users/{username}", response_model=VblUserResponse)
+@app.get("/users/username{username}", response_model=VblUserResponse)
 def get_user(username: str):
     user = operations.get_by_username(username)
     if not user:
