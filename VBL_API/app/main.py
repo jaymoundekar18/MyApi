@@ -41,9 +41,9 @@ def get_user(id: str):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@app.get("/users/{uname}", response_model=VblUserResponse)
-def get_user(uname: str):
-    user = operations.get_by_username(uname)
+@app.get("/users/{username}", response_model=VblUserResponse)
+def get_user(username: str):
+    user = operations.get_by_username(username)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
