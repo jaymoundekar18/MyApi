@@ -33,12 +33,19 @@ def get_all_users():
     ]
 
 # Get User by ID
-def get_user(id: str):
+def get_user_byID(id: str):
     user = vbl_collection.find_one({"_id": ObjectId(id)})
     if user:
         return vbluser_helper(user)
     return None
 
+# Get User by Username
+def get_by_username(uname: str):
+    user = vbl_collection.find_one({"username": uname})
+    if user:
+        return vbluser_helper(user)
+    return None
+    
 # Update User by ID
 def update_user(id: str, data: dict):
     if "password" in data:
