@@ -36,7 +36,14 @@ def list_users():
 
 @app.get("/users/{id}", response_model=VblUserResponse)
 def get_user(id: str):
-    user = operations.get_user(id)
+    user = operations.get_user_byID(id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+@app.get("/users/{uname}", response_model=VblUserResponse)
+def get_user(uname: str):
+    user = operations.get_by_username(uname)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
