@@ -40,8 +40,8 @@ def get_user_byID(id: str):
     return None
 
 # Get User by Username
-def get_by_username(uname: str):
-    user = vbl_collection.find_one({"username": uname})
+def get_by_username(username: str):
+    user = vbl_collection.find_one({"username": username})
     if user:
         return vbluser_helper(user)
     return None
