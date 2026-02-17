@@ -13,6 +13,7 @@ class EmployeeBase(BaseModel):
     email: EmailStr
     address: str
     phone: str
+    empid: str
 
 class EmployeeCreate(EmployeeBase):
     pass
