@@ -7,6 +7,7 @@ def employee_helper(employee) -> dict:
         "email": employee["email"],
         "address": employee["address"],
         "phone": employee["phone"],
+        "empid": employee["empid"]
     }
 
 
