@@ -18,6 +18,7 @@ class VblUserBase(BaseModel):
     email: EmailStr
     username: str
     books: list[VblBookBase] = Field(default_factory=list)
+    yearly_goal: int
 
 class VblUserCreate(VblUserBase):
     password: str
@@ -41,3 +42,4 @@ class VblUserUpdate(BaseModel):
     username: Optional[str] = None
     password: Optional[str] = None
     books: Optional[list[VblBookBase]] = None
+    yearly_goal: Optional[int] = None
