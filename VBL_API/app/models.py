@@ -4,6 +4,6 @@ def vbluser_helper(user) -> dict:
         "fullname": user["fullname"],
         "email": user["email"],
         "username": user["username"],
-        "books": user["books"],
-        "yearly_goal": user["yearly_goal"]
+        "books": user.get("books", []),
+        "yearly_goal": user.get("yearly_goal")
     }
