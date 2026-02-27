@@ -5,4 +5,5 @@ def vbluser_helper(user) -> dict:
         "email": user["email"],
         "username": user["username"],
         "books": user["books"],
+        "yearly_goal": user["yearly_goal"]
     }
