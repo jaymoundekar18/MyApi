@@ -124,3 +124,34 @@ def delete_user_book(user_id: str, book_index: int):
         {"$set": {"books": user["books"]}}
     )
     return vbluser_helper(user)
+
+
+# Add yearly goal
+def add_yearGoal_to_user(user_id: str, goal: dict):
+    vbl_collection.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$push": {"yearly_goal": goal}}
+    )
+    user = vbl_collection.find_one({"_id": ObjectId(user_id)})
+    return vbluser_helper(user)
+
+# Get User's yearly goal
+def get_user_goal(user_id: str):
+    user = vbl_collection.find_one({"_id": ObjectId(user_id)})
+    if user:
+        return user.get("yearly_goal", [])
+    return []
+
+# Update Specific Goal in User's Collection
+def update_user_goal(user_id: str, goal_index: int, data: dict):
+    user = vbl_collection.find_one({"_id": ObjectId(user_id)})
+    if not user or goal_index >= len(user.get("yearly_goal", [])):
+        return None
+
+    user["yearly_goal"][goal_index].update(data)
+    vbl_collection.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"yearly_goal": user["yearly_goal"]}}
+    )
+    user = vbl_collection.find_one({"_id": ObjectId(user_id)})
+    return vbluser_helper(user)
