@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from app.schemas import VblUserCreate, VblUserResponse, VblUserUpdate
 from app import operations
 from app.schemas import LoginRequest, LoginResponse
-from app.schemas import VblBookBase
+from app.schemas import VblBookBase, YearGoal
 
 app = FastAPI(title="VBL API")
 
@@ -106,4 +106,23 @@ def delete_book(user_id: str, book_index: int):
     updated_user = operations.delete_user_book(user_id, book_index)
     if not updated_user:
         raise HTTPException(status_code=404, detail="Book not found")
+    return updated_user
+
+
+
+# ------- Goal Endpoints -------
+
+@app.post("/users/{user_id}/goals", response_model=VblUserResponse)
+def add_book(user_id: str, goal: YearGoal):
+    return operations.add_yearGoal_to_user(user_id, goal.dict())
+
+@app.get("/users/{user_id}/goals", response_model=list[YearGoal])
+def list_user_books(user_id: str):
+    return operations.get_user_goal(user_id)
+
+@app.put("/users/{user_id}/goal/{goal_index}", response_model=VblUserResponse)
+def update_goal(user_id: str, book_index: int, goal: YearGoal):
+    updated_user = operations.update_user_goal(user_id, book_index, goal.dict())
+    if not updated_user:
+        raise HTTPException(status_code=404, detail="Goal not found")
     return updated_user
