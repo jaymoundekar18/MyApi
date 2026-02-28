@@ -13,12 +13,23 @@ class VblBookBase(BaseModel):
     start_date: Optional[str] = ""
     end_date: Optional[str] = ""
 
+class YearGoal(BaseModel):
+    year: str
+    goal: int
+    completed: int
+
+class Streak(BaseModel):
+    current_streak: int = 0
+    longest_streak: int = 0
+    last_read_date: Optional[str] = None  
+
 class VblUserBase(BaseModel):
     fullname: str
     email: EmailStr
     username: str
     books: list[VblBookBase] = Field(default_factory=list)
-    yearly_goal: int = 0
+    yearly_goal: list[YearGoal] = Field(default_factory=list)
+    streak: Optional[Streak] = None
 
 class VblUserCreate(VblUserBase):
     password: str
@@ -42,4 +53,6 @@ class VblUserUpdate(BaseModel):
     username: Optional[str] = None
     password: Optional[str] = None
     books: Optional[list[VblBookBase]] = None
-    yearly_goal: Optional[int] = None
+    yearly_goal: Optional[list[YearGoal]] = None
+    streak: Optional[Streak] = None
+
