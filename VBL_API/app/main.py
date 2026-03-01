@@ -121,8 +121,8 @@ def list_user_books(user_id: str):
     return operations.get_user_goal(user_id)
 
 @app.put("/users/{user_id}/goal/{goal_index}", response_model=VblUserResponse)
-def update_goal(user_id: str, book_index: int, goal: YearGoal):
-    updated_user = operations.update_user_goal(user_id, book_index, goal.dict())
+def update_goal(user_id: str, goal_index: int, goal: YearGoal):
+    updated_user = operations.update_user_goal(user_id, goal_index, goal.dict())
     if not updated_user:
         raise HTTPException(status_code=404, detail="Goal not found")
     return updated_user
