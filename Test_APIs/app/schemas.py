@@ -53,3 +53,43 @@ class OrderResponse(BaseModel):
     total_amount: float
     order_date: datetime
     status: str
+
+
+
+
+# -------------------------------------------------
+# Bank schemas for request and response models
+# -------------------------------------------------
+
+class TransactionBase(BaseModel):
+    transaction_id: str
+    from_user_id: str
+    to_user_id: str
+    amount: float
+    transaction_type: str   # send / receive
+    status: str # success / failed / pending
+    created_at: datetime
+
+
+class TransactionCreate(TransactionBase):
+    pass
+
+class TransactionResponse(TransactionBase):
+    pass
+
+
+class BankCustomerBase(BaseModel):
+    user_id: str
+    name: str
+    phone_number: str
+    email: EmailStr
+    account_number: str
+    upi_id: str
+    account_balance: float
+
+class BankCustomerCreate(BankCustomerBase):
+    password: str
+    transactions: List[TransactionCreate]
+
+class BankCustomerResponse(BankCustomerBase):
+    transactions: List[TransactionResponse]

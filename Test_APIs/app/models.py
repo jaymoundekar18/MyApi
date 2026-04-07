@@ -46,3 +46,45 @@ def order_helper(order) -> dict:
         "order_date": order["order_date"],
         "status": order["status"],
     }
+
+
+def bank_customer_helper(customer) -> dict:
+    return {
+        "id": str(customer["_id"]),
+        "user_id": customer["user_id"],
+        "name": customer["name"],
+        "phone_number": customer["phone_number"],
+        "email": customer["email"],
+        "account_number": customer["account_number"],
+        "upi_id": customer["upi_id"],
+        "account_balance": customer["account_balance"],
+        "transactions": customer.get("transactions", [])
+    }
+
+
+# def transaction_helper(transaction) -> dict:
+#     return {
+#         "transaction_id": transaction["transaction_id"],
+#         "from_user_id": transaction["from_user_id"],
+#         "to_user_id": transaction["to_user_id"],
+#         "amount": transaction["amount"],
+#         "transaction_type": transaction["transaction_type"],
+#         "status": transaction["status"],
+#         "created_at": transaction["created_at"],
+#     }
+
+
+# def bank_customer_helper(customer) -> dict:
+#     return {
+#         "id": str(customer["_id"]),
+#         "user_id": customer["user_id"],
+#         "name": customer["name"],
+#         "phone_number": customer["phone_number"],
+#         "email": customer["email"],
+#         "account_number": customer["account_number"],
+#         "upi_id": customer["upi_id"],
+#         "account_balance": customer["account_balance"],
+#         "transactions": [
+#             transaction_helper(txn) for txn in customer.get("transactions", [])
+#         ]
+#     }

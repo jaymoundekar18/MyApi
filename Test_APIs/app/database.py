@@ -19,6 +19,8 @@ users_collection = ecomm_db['users']
 products_collection = ecomm_db['products']
 orders_collection = ecomm_db['orders']
 
+bank_collection = db['customer']
+
 # for emp in employee_collection.find():
 #     print("the emp is : ",emp)
 

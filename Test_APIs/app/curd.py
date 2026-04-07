@@ -1,7 +1,7 @@
 from bson import ObjectId
 from app.database import employee_collection
-from app.database import users_collection, products_collection, orders_collection
-from app.models import employee_helper, user_helper, product_helper, order_helper
+from app.database import users_collection, products_collection, orders_collection, bank_collection
+from app.models import employee_helper, user_helper, product_helper, order_helper, bank_customer_helper
 
 # ---------------------------
 # Employee CURD operations
@@ -58,3 +58,123 @@ def get_all_products():
 # Get all orders
 def get_all_orders():
     return [order_helper(order) for order in orders_collection.find()]
+
+
+
+# -------------------------------------------------
+# Authenticate User
+# -------------------------------------------------
+
+def authenticate_customer(user_id: str, password: str):
+    customer = bank_collection.find_one({"user_id": user_id})
+    if not customer:
+        return None
+
+    if not verify_password(password, customer["password"]):
+        return None
+
+    return bank_customer_helper(customer)
+
+# -------------------------------------------------
+# Customer Operations
+# -------------------------------------------------
+
+# Create New Customer
+def add_customer(customer: dict):
+    customer["password"] = hash_password(customer["password"])
+    result = bank_collection.insert_one(customer)
+    new_customer = bank_collection.find_one(
+        {"_id": result.inserted_id}
+    )
+    return bank_customer_helper(new_customer)
+
+
+# Get all Customers
+def get_all_customers():
+    return [
+        bank_customer_helper(cust)
+        for cust in bank_collection.find()
+    ]
+
+
+# Get Customer by ID
+def get_customer_by_id(id: str):
+    customer = bank_collection.find_one({"_id": ObjectId(id)})
+    if customer:
+        return bank_customer_helper(customer)
+    return None
+
+
+# Get Customer by User ID
+def get_customer_by_user_id(user_id: str):
+    customer = bank_collection.find_one({"user_id": user_id})
+    if customer:
+        return bank_customer_helper(customer)
+    return None
+
+
+# Update Customer
+def update_customer(id: str, data: dict):
+    if "password" in data:
+        data["password"] = hash_password(data["password"])
+
+    bank_collection.update_one(
+        {"_id": ObjectId(id)}, {"$set": data}
+    )
+    customer = bank_collection.find_one({"_id": ObjectId(id)})
+    return bank_customer_helper(customer)
+
+
+# Delete Customer
+def delete_customer(id: str):
+    bank_collection.delete_one({"_id": ObjectId(id)})
+    return True
+
+
+
+# -------------------------------------------------
+# Transaction Operations
+# -------------------------------------------------
+
+# Add Transaction
+def add_transaction(user_id: str, transaction: dict):
+    bank_collection.update_one(
+        {"user_id": user_id},
+        {"$push": {"transactions": transaction}}
+    )
+    customer = bank_collection.find_one({"user_id": user_id})
+    return bank_customer_helper(customer)
+
+
+# Get Transactions
+def get_transactions(user_id: str):
+    customer = bank_collection.find_one({"user_id": user_id})
+    if customer:
+        return customer.get("transactions", [])
+    return []
+
+
+# Transfer Money
+def transfer_money(from_user_id: str, to_user_id: str, amount: float):
+    sender = bank_collection.find_one({"user_id": from_user_id})
+    receiver = bank_collection.find_one({"user_id": to_user_id})
+
+    if not sender or not receiver:
+        return None
+
+    if sender["account_balance"] < amount:
+        return None
+
+    # Deduct from sender
+    bank_collection.update_one(
+        {"user_id": from_user_id},
+        {"$inc": {"account_balance": -amount}}
+    )
+
+    # Add to receiver
+    bank_collection.update_one(
+        {"user_id": to_user_id},
+        {"$inc": {"account_balance": amount}}
+    )
+
+    return True
