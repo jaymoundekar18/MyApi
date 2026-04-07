@@ -89,7 +89,7 @@ class BankCustomerBase(BaseModel):
 
 class BankCustomerCreate(BankCustomerBase):
     password: str
-    transactions: List[TransactionCreate]
+    transactions: list[TransactionCreate]  = Field(default_factory=list)
 
 class BankCustomerResponse(BankCustomerBase):
-    transactions: List[TransactionResponse]
+    transactions: list[TransactionResponse]
