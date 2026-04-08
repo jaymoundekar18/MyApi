@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from app.schemas import EmployeeCreate, EmployeeResponse, BankCustomerCreate, BankCustomerResponse
+from app.schemas import EmployeeCreate, EmployeeResponse, BankCustomerCreate, BankCustomerResponse, BankCustomerUpdate
 from app.schemas import UserResponse, ProductResponse, OrderResponse 
 from app import curd
 
@@ -78,9 +78,13 @@ def get_customer(id: str):
     return customer
 
 
-@app.put("/customers/{id}", response_model=BankCustomerResponse)
-def update_customer(id: str, customer: BankCustomerCreate):
-    return curd.update_customer(id, customer.dict())
+# @app.put("/customers/{id}", response_model=BankCustomerResponse)
+# def update_customer(id: str, customer: BankCustomerCreate):
+#     return curd.update_customer(id, customer.dict())
+
+@app.patch("/customers/{id}", response_model=BankCustomerResponse)
+def update_customer(id: str, customer: BankCustomerUpdate):
+    return curd.update_customer(id, customer.dict(exclude_unset=True))
 
 
 @app.delete("/customers/{id}")
@@ -102,9 +106,9 @@ def get_transactions(user_id: str):
     return curd.get_transactions(user_id)
 
 
-@app.post("/transactions/{user_id}")
-def add_transaction(user_id: str, transaction: dict):
-    return curd.add_transaction(user_id, transaction)
+# @app.post("/transactions/{user_id}")
+# def add_transaction(user_id: str, transaction: dict):
+#     return curd.add_transaction(user_id, transaction)
 
 
 @app.post("/transfer")

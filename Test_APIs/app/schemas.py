@@ -92,4 +92,15 @@ class BankCustomerCreate(BankCustomerBase):
     transactions: list[TransactionCreate]  = Field(default_factory=list)
 
 class BankCustomerResponse(BankCustomerBase):
+    id: str
     transactions: list[TransactionResponse]
+
+class BankCustomerUpdate(BaseModel):
+    name: Optional[str] = None
+    phone_number: Optional[str] = None
+    email: Optional[EmailStr] = None
+    account_number: Optional[str] = None
+    upi_id: Optional[str] = None
+    account_balance: Optional[float] = None
+    password: Optional[str] = None
+    transactions: Optional[list[TransactionCreate]] = None

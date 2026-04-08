@@ -2,6 +2,8 @@ from bson import ObjectId
 from app.database import employee_collection
 from app.database import users_collection, products_collection, orders_collection, bank_collection
 from app.models import employee_helper, user_helper, product_helper, order_helper, bank_customer_helper
+from app.security import hash_password, verify_password
+from datetime import datetime
 
 # ---------------------------
 # Employee CURD operations
@@ -164,6 +166,36 @@ def transfer_money(from_user_id: str, to_user_id: str, amount: float):
 
     if sender["account_balance"] < amount:
         return None
+
+    send_transaction = {
+        "transaction_id": str(ObjectId()),
+        "from_user_id": from_user_id,
+        "to_user_id": to_user_id,
+        "amount": amount,
+        "transaction_type": "send",
+        "status": "success",
+        "created_at": datetime.utcnow()
+    }
+
+    receive_transaction = {
+        "transaction_id": str(ObjectId()),
+        "from_user_id": from_user_id,
+        "to_user_id": to_user_id,
+        "amount": amount,
+        "transaction_type": "receive",
+        "status": "success",
+        "created_at": datetime.utcnow()
+    }
+
+    bank_collection.update_one(
+        {"user_id": from_user_id},
+        {"$push": {"transactions": send_transaction}}
+    )
+
+    bank_collection.update_one(
+        {"user_id": to_user_id},
+        {"$push": {"transactions": receive_transaction}}
+    )
 
     # Deduct from sender
     bank_collection.update_one(
