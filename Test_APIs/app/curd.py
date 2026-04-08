@@ -4,6 +4,7 @@ from app.database import users_collection, products_collection, orders_collectio
 from app.models import employee_helper, user_helper, product_helper, order_helper, bank_customer_helper
 from app.security import hash_password, verify_password
 from datetime import datetime
+import uuid
 
 # ---------------------------
 # Employee CURD operations
@@ -167,46 +168,84 @@ def transfer_money(from_user_id: str, to_user_id: str, amount: float):
     if sender["account_balance"] < amount:
         return None
 
-    send_transaction = {
-        "transaction_id": str(ObjectId()),
-        "from_user_id": from_user_id,
-        "to_user_id": to_user_id,
-        "amount": amount,
-        "transaction_type": "send",
-        "status": "success",
-        "created_at": datetime.utcnow()
+    trans_id = uniqueTransactionId()
+
+    if update_accountBalance(from_user_id, to_user_id, sender["account_balance"], receiver["account_balance"], amount):
+        send_transaction = {
+            "transaction_id": trans_id,
+            "from_user_id": from_user_id,
+            "to_user_id": to_user_id,
+            "amount": amount,
+            "transaction_type": "send",
+            "status": "success",
+            "created_at": datetime.utcnow()
+        }
+
+        receive_transaction = {
+            "transaction_id": trans_id,
+            "from_user_id": from_user_id,
+            "to_user_id": to_user_id,
+            "amount": amount,
+            "transaction_type": "receive",
+            "status": "success",
+            "created_at": datetime.utcnow()
+        }
+
+        bank_collection.update_one(
+            {"user_id": from_user_id},
+            {"$push": {"transactions": send_transaction}}
+        )
+
+        bank_collection.update_one(
+            {"user_id": to_user_id},
+            {"$push": {"transactions": receive_transaction}}
+        )
+
+        # Deduct from sender
+        bank_collection.update_one(
+            {"user_id": from_user_id},
+            {"$inc": {"account_balance": -amount}}
+        )
+
+        # Add to receiver
+        bank_collection.update_one(
+            {"user_id": to_user_id},
+            {"$inc": {"account_balance": amount}}
+        )
+
+        return True
+
+def update_accountBalance(senderId: str, receiverId: str, sender_accountBal: float, receiver_accountBal: float, amount: float):
+    current_senderBalance = sender_accountBal - amount
+    current_receiverBalance = receiver_accountBal + amount
+
+    try:
+        bank_collection.update_one(
+            {"user_id": senderId},
+            {"$set": {"account_balance": current_senderBalance}}
+        )
+
+        bank_collection.update_one(
+            {"user_id": receiverId},
+            {"$set": {"account_balance": current_receiverBalance}}
+        )
+    except:
+        return False
+
+    else:
+        return True
+
+def generate_transaction_id():
+    return "FBCT" + str(uuid.uuid4().int)[:5]
+
+def uniqueTransactionId() -> str:
+    existing_ids = {
+        txn["transaction_id"]
+        for user in bank_collection.find()
+        for txn in user.get("transactions", [])
     }
 
-    receive_transaction = {
-        "transaction_id": str(ObjectId()),
-        "from_user_id": from_user_id,
-        "to_user_id": to_user_id,
-        "amount": amount,
-        "transaction_type": "receive",
-        "status": "success",
-        "created_at": datetime.utcnow()
-    }
-
-    bank_collection.update_one(
-        {"user_id": from_user_id},
-        {"$push": {"transactions": send_transaction}}
-    )
-
-    bank_collection.update_one(
-        {"user_id": to_user_id},
-        {"$push": {"transactions": receive_transaction}}
-    )
-
-    # Deduct from sender
-    bank_collection.update_one(
-        {"user_id": from_user_id},
-        {"$inc": {"account_balance": -amount}}
-    )
-
-    # Add to receiver
-    bank_collection.update_one(
-        {"user_id": to_user_id},
-        {"$inc": {"account_balance": amount}}
-    )
-
-    return True
+    while True:
+        transaction_id = generate_transaction_id()
+        if transaction_id not in existing_ids:
+            return transaction_id
