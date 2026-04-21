@@ -201,18 +201,6 @@ def transfer_money(from_user_id: str, to_user_id: str, amount: float):
             {"$push": {"transactions": receive_transaction}}
         )
 
-        # Deduct from sender
-        bank_collection.update_one(
-            {"user_id": from_user_id},
-            {"$inc": {"account_balance": -amount}}
-        )
-
-        # Add to receiver
-        bank_collection.update_one(
-            {"user_id": to_user_id},
-            {"$inc": {"account_balance": amount}}
-        )
-
         return True
 
 def update_accountBalance(senderId: str, receiverId: str, sender_accountBal: float, receiver_accountBal: float, amount: float):
