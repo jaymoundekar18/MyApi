@@ -159,16 +159,20 @@ def get_transactions(user_id: str):
 
 # Transfer Money
 def transfer_money(from_user_id: str, to_user_id: str, amount: float):
+    
+    trans_id = uniqueTransactionId()
+    
     sender = bank_collection.find_one({"user_id": from_user_id})
     receiver = bank_collection.find_one({"user_id": to_user_id})
 
     if not sender or not receiver:
+        failed_transaction(trans_id, from_user_id, to_user_id, amount)
         return None
 
     if sender["account_balance"] < amount:
+        failed_transaction(trans_id, from_user_id, to_user_id, amount)
         return None
 
-    trans_id = uniqueTransactionId()
 
     if update_accountBalance(from_user_id, to_user_id, sender["account_balance"], receiver["account_balance"], amount):
         send_transaction = {
@@ -237,3 +241,20 @@ def uniqueTransactionId() -> str:
         transaction_id = generate_transaction_id()
         if transaction_id not in existing_ids:
             return transaction_id
+
+
+def failed_transaction(transaction_id: str, from_user_id: str, to_user_id: str, amount: float):
+    send_failed_transaction = {
+            "transaction_id": transaction_id,
+            "from_user_id": from_user_id,
+            "to_user_id": to_user_id,
+            "amount": amount,
+            "transaction_type": "send",
+            "status": "failed",
+            "created_at": datetime.utcnow()
+        }
+    
+    bank_collection.update_one(
+            {"user_id": from_user_id},
+            {"$push": {"transactions": send_failed_transaction}}
+        )
