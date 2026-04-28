@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPExceptio   
+from fastapi import FastAPI, HTTPException   
 from fastapi import FastAPI, Query, Security, HTTPException, status, Depends
 from fastapi.security.api_key import APIKeyHeader
 from app.schemas import EmployeeCreate, EmployeeResponse, BankCustomerCreate, BankCustomerResponse, BankCustomerUpdate
@@ -15,8 +15,14 @@ def get_api_key(
     api_key: str = Security(api_key_header),
     api_key_query: str = Query(None, alias="api_key")
 ):
-    if api_key == API_KEY or api_key_query == API_KEY:
-        return api_key or api_key_query
+    # if api_key == API_KEY or api_key_query == API_KEY:
+    #     return api_key or api_key_query
+
+    key = api_key or api_key_query
+
+    if key and key == API_KEY:
+        return key
+
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
         detail="Could not validate API key"
