@@ -258,3 +258,33 @@ def failed_transaction(transaction_id: str, from_user_id: str, to_user_id: str, 
             {"user_id": from_user_id},
             {"$push": {"transactions": send_failed_transaction}}
         )
+
+
+
+def generate_customer_accno():
+    return "FBCA" + str(uuid.uuid4().int)[:10]
+
+def uniqueCustAccNo():
+    existing_accnos = {
+        user["account_number"]
+        for user in bank_collection.find()
+    }
+
+    while True:
+        user_accno = generate_customer_accno()
+        if user_accno not in existing_accnos:
+            return user_accno
+
+def generate_customer_userid():
+    return "FBCI" + str(uuid.uuid4().int)[:5]
+
+def uniqueCustUserId():
+    existing_ids = {
+        user["user_id"]
+        for user in bank_collection.find()
+    }
+
+    while True:
+        user_id = generate_customer_userid()
+        if user_id not in existing_ids:
+            return user_id

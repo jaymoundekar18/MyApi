@@ -142,3 +142,12 @@ def transfer(from_user_id: str, to_user_id: str, amount: float):
     if not result:
         raise HTTPException(status_code=400, detail="Transfer failed")
     return {"message": "Transfer successful"}
+
+
+@app.get("/getNewCustAccNo", dependencies=[Depends(get_api_key)])
+def get_newAccNo():
+    return curd.uniqueCustAccNo() 
+
+@app.get("/getNewCustUserId", dependencies=[Depends(get_api_key)])
+def get_newAccNo():
+    return curd.uniqueCustUserId()
